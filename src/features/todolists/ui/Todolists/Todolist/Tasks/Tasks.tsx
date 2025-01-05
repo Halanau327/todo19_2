@@ -3,13 +3,17 @@ import { TaskStatus } from "common/enums"
 import { useGetTasksQuery } from "../../../../api/tasksApi"
 import { DomainTodolist } from "../../../../model/todolistsSlice"
 import { Task } from "./Task/Task"
+import { setAppError } from "../../../../../../app/appSlice"
+import { useDispatch } from "react-redux"
+import { useEffect } from "react"
 
 type Props = {
   todolist: DomainTodolist
 }
 
+
 export const Tasks = ({ todolist }: Props) => {
-  const { data } = useGetTasksQuery(todolist.id)
+  const { data, isLoading, isError, error } = useGetTasksQuery(todolist.id)
 
   let tasksForTodolist = data?.items
 
