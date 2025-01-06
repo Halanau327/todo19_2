@@ -1,19 +1,19 @@
 import List from "@mui/material/List"
 import { TaskStatus } from "common/enums"
 import { useGetTasksQuery } from "../../../../api/tasksApi"
-import { DomainTodolist } from "../../../../model/todolistsSlice"
 import { Task } from "./Task/Task"
-import { setAppError } from "../../../../../../app/appSlice"
-import { useDispatch } from "react-redux"
-import { useEffect } from "react"
+import { TasksPagination } from "../TasksPagination/TasksPagination"
+import { useState } from "react"
+import { DomainTodolist } from "../../../../lib/types/types"
 
 type Props = {
   todolist: DomainTodolist
 }
 
-
 export const Tasks = ({ todolist }: Props) => {
-  const { data, isLoading, isError, error } = useGetTasksQuery(todolist.id)
+  const [page, setPage] = useState(1)
+
+  const { data, isLoading, isError, error } = useGetTasksQuery({ todolistId: todolist.id, args: { page } })
 
   let tasksForTodolist = data?.items
 
@@ -30,11 +30,14 @@ export const Tasks = ({ todolist }: Props) => {
       {tasksForTodolist?.length === 0 ? (
         <p>Тасок нет</p>
       ) : (
-        <List>
-          {tasksForTodolist?.map((task) => {
-            return <Task key={task.id} task={task} todolist={todolist} />
-          })}
-        </List>
+        <>
+          <List>
+            {tasksForTodolist?.map((task) => {
+              return <Task key={task.id} task={task} todolist={todolist} />
+            })}
+          </List>
+          <TasksPagination totalCount={data?.totalCount || 0} page={page} setPage={setPage} />
+        </>
       )}
     </>
   )
